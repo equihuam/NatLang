@@ -69,7 +69,8 @@ def convert(fname, pages=None, M=1.0, L=0.3, W=0.2, F=0.5):
 
 
 pdf_files = [f for f in listdir(".") if f.endswith(".pdf")]
-text = convert(fname=pdf_files[2], M=8.0, L=2.0, W=0.2, F=0.5).decode("utf-8")
+document = [f for f in pdf_files if "Completo" in f][0]
+text = convert(fname=document, M=8.0, L=2.0, W=0.2, F=0.5).decode("utf-8")
 
 text_pp = re.split("[0-9]+[ \n]*\fProyecto de Nación 2018-2024 \n", text)
 text_pp = [re.sub("( \n+)+", "\n", t).strip("\n") for t in text_pp]
