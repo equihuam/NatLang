@@ -15,28 +15,27 @@ def convert(fname, pages=None, M=1.0, L=0.3, W=0.2, F=0.5):
     Each value is specified not as an actual length, but as a proportion of the length
     to the size of each character in question.
 
-    These parameters are used for layout analysis. In an actual PDF file,
-    text portions might be split into several chunks depending on the authoring software.
-    Therefore, text extraction needs to splice text chunks. Text chunks are continuous if
+    Parameters define layout analysis. In a PDF text is in several chunks of various types.
+    Text extraction needs to recover text chunks which ar regarded as continuous if
     elements distance is closer than the char_margin (identified as M) and thus are
-    grouped into one block. Two lines whose distance is closer than the line_margin (L)
-    are part of the same text box (a rectangular area that contains continuous text).
-    If the distance between two words is greater than the word_margin (W), blank
-    characters (spaces) shall be inserted as necessary to keep format, as a blank between
-    words might not be represented as a space, but indicated by the positioning of each word.
+    grouped into one block. Two lines are part of the same text if they are closer than
+    the line_margin (L). If the distance between two words is greater than the word_margin (W),
+    blank characters (spaces) shall be inserted as necessary to keep format.
     Boxes flow (F) specifies how much a horizontal and vertical position of a text matters
     when determining text flow order. The value should be within the range from -1.0
     (only horizontal position matters) to +1.0 (only vertical position matters).
 
     Keyword arguments:
 
-     fname -- PDF file name (string)
-     pages -- Set of pages to extract (set)
-     M -- char_margin (float)
-     L -- line_margin (float)
-     W -- word_margin (float)
-     F -- boxes_flow (float)
-     return text: pdf contents as plain text
+      fname -- PDF file name (string)
+      pages -- Set of pages to extract (set)
+      M -- char_margin (float)
+      L -- line_margin (float)
+      W -- word_margin (float)
+      F -- boxes_flow (float)
+
+    Return:
+      text: pdf contents as plain text
 
     """
     if not pages:
