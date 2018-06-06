@@ -1,12 +1,12 @@
 import spacy
-from io import BytesIO
-
+from spacy import displacy
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
+from io import BytesIO
 import re
-from os import listdir
+from os import listdir, path, curdir
 
 
 def convert(fname, pages=None, M=1.0, L=0.3, W=0.2, F=0.5):
@@ -66,18 +66,30 @@ def convert(fname, pages=None, M=1.0, L=0.3, W=0.2, F=0.5):
     output.close
     return text
 
+if __name__ == '__main__':
+    pdf_files = [f for f in listdir("./Plan de Nación/PDF") if f.endswith(".pdf")]
+    document = path.join(".", "Plan de Nación", "PDF", [f for f in pdf_files if "Completo" in f][0])
+    text = convert(fname=document, M=8.0, L=2.0, W=0.2, F=0.5).decode("utf-8")
 
-pdf_files = [f for f in listdir(".") if f.endswith(".pdf")]
-document = [f for f in pdf_files if "Completo" in f][0]
-text = convert(fname=document, M=8.0, L=2.0, W=0.2, F=0.5).decode("utf-8")
+    # Cleaning
+    text = re.sub("Nación[\n]*2018[\n]*-[\n ]*2024", "Nación 2018-2024", text)
+    text = re.sub("\nProyecto de Nación 2018-2024\n", "", text)
+    text = re.sub("Proyecto de Nación 2018 -\n\n2024", "Proyecto de Nación 2018-2024\n\n", text)
+    text_pp = re.split("[0-9]+[ \n]*\f[ ]*Proyecto de Nación 2018-2024[ ]*\n", text)
+    text_pp = [re.sub("( \n+)+", "\n", t).strip("\n") for t in text_pp]
+    text = "\n".join(text_pp)
+    text = re.sub("(?<=[-,; a-záéíóú0-9])\n(?=[-,; a-zzáéíóú0-9])", " ", text)
+    text = re.sub("(?<=[ a-zzáéíóú])\n(?=[A-Z])", " ", text)
+    text = re.sub("www.proyecto18.mx.\n", "www.proyecto18.mx. ", text)
 
-text_pp = re.split("[0-9]+[ \n]*\fProyecto de Nación 2018-2024 \n", text)
-text_pp = [re.sub("( \n+)+", "\n", t).strip("\n") for t in text_pp]
+    # Saving clean text
+    with open("texto.txt", 'w', encoding="utf-8") as outfile:
+        outfile.write(text)
 
-# text = text.split("\n[0-9]+\b\fProyecto de Nación 2018-2024 \n\n")
-# re.sub()
+    nlp = spacy.load("es")
 
-nlp = spacy.load('en')
+    doc = nlp(text)
+    doc.to_disk('Proyecto_nación.bin')  # save the processed Doc recall with doc = Doc(Vocab()).from_disk(<file>)
+    # displacy.serve(doc, ents=["biodiversidad", "ambiente", "sostenible", "sustentable", "ecología"])
 
-doc = nlp(u'This is a sentence.')
-
+    doc

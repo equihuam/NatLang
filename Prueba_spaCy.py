@@ -2,8 +2,6 @@ import spacy
 from spacy import displacy
 from pathlib import Path
 
-
-
 nlp = spacy.load('en')
 sentences = ["This is an example.", "This is another one."]
 doc = nlp("The big grey dog ate all of the chocolate, but fortunately he wasn't sick!")
