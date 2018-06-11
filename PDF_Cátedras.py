@@ -9,7 +9,6 @@ import csv
 def getComponents(text):
     comp = {}
     txtChars = r"[\\\a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑº*<>\?¿!¡\s:(),;.-]*"
-    text = convert(fname=doc, M=1, L=10, W=0.1, F=-1.00).decode("utf-8")
     comp["text"] = text
     comp["proyecto"] = re.search("(?<=Número proyecto\:).*", text).group(0).replace("\n", " ").replace("\s", "").strip()
     comp["institucion"] = re.search(r"(?<=Institución\: \n).*", text).group(0).replace("\n", " ").replace("\f", "")
@@ -65,7 +64,8 @@ documents = [f for f in pdf_files if "generaR" in f]
 # Get components
 bowDocs, componentes = [], []
 for doc in documents:
-    docData = getComponents(doc)
+    text = convert(fname=doc, M=1, L=10, W=0.1, F=-1.00).decode("utf-8")
+    docData = getComponents(text)
     componentes.append(docData)
     cleanData(docData)
     bow = "\n".join([docData["proposito"], docData["objetivos"], docData["motivosInst"],
